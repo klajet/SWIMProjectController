@@ -1,0 +1,51 @@
+		for(int i = 0; i < sizeof(buffer); i++)
+	    		  buffer[i] = ' ';
+	  HAL_UART_Receive(&huart4, buffer, sizeof(buffer), 100);
+
+	  if(buffer[0] != ' ')
+	  {
+		  HAL_UART_Transmit(&huart2, " Odebrano= ", 12, 100);
+	  	  HAL_UART_Transmit(&huart2, buffer, sizeof(buffer), 100);
+	  	  HAL_UART_Transmit(&huart2, "\r\n", 2, 100);
+
+	  	  //Parsing
+	  	  int sil1Dir = (int)buffer[0] - 48;
+	  	  int sil2Dir = (int)buffer[4] - 48;
+	  	  int sil1Sp = (int)(buffer[1])*100 + (int)(buffer[2])*10 + (int)(buffer[3]);
+	  	  int sil2Sp =	(int)(buffer[5])*100 + (int)(buffer[6])*10 + (int)(buffer[7]);
+	  	  int serSt = (int)buffer[8] - 48;
+	  	  int serVal = (int)(buffer[9])*100 + (int)(buffer[10])*10 + (int)(buffer[11]);
+	  	  int checkSum = (int)(buffer[12])*100 + (int)(buffer[13])*10 + (int)(buffer[14]);
+	  	  sil1Sp -= 5328;
+	  	  sil2Sp -= 5328;
+	  	  serVal -= 5328;
+	  	  checkSum -= 5328;
+	  	  int chchSum = 0;
+	  	  for(int i = 0; i < 12; i++)
+	  	  {
+	  		  chchSum += (int)buffer[i] - 48;
+	  	  }
+	  	  if(checkSum == chchSum)
+	  	  {
+	  	  char txt[12];
+	  	  sprintf(txt, "%d%3d%d%3d%d%3d",sil1Dir,sil1Sp,sil2Dir,sil2Sp,serSt,serVal);
+	  	  HAL_UART_Transmit(&huart2, txt, sizeof(txt), 100);
+	  	  HAL_UART_Transmit(&huart2, "\r\n", 2, 100);
+
+	  	  //ustawienie kierunku ruchu obu silników
+	  	  HAL_GPIO_WritePin(INA1_GPIO_Port, INA1_Pin, sil1Dir);
+	  	  HAL_GPIO_WritePin(INA2_GPIO_Port, INA2_Pin, !sil1Dir);
+	  	  HAL_GPIO_WritePin(INB1_GPIO_Port, INB1_Pin, sil2Dir);
+	  	  HAL_GPIO_WritePin(INB2_GPIO_Port, INB2_Pin, !sil2Dir);
+
+		// 450 - 750
+	  	  if( ( sil1Sp >= 0 || sil1Sp <= 300 ) && ( sil2Sp >= 0 || sil2Sp <= 300 ) )
+	  	  {
+	  		  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 450+sil1Sp); //ustawienie prędkości
+	  		  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 450+sil2Sp);
+	  	  }
+	  	  //Jesli predkosc obu silnikow >0 wlacz silniki
+	  	  if(serSt)
+	  		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, serVal+40);
+	  	  else
+		  	  HAL_GPIO_WritePin(STDB_GPIO_Port, STDB_Pin, (sil1Sp && sil2Sp));
