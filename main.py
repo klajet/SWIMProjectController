@@ -147,6 +147,7 @@ def controlWindow(peripheral, service_uuid, characteristic_uuid):
     window.bind('<d>', '→')
     window.bind('<l>', '-LARGE-')
     window.bind('<k>', '-SMOL-')
+    window.bind('<o>', '-OPEN-')
 
     while True:
         event, values = window.read(timeout=0)
@@ -169,19 +170,23 @@ def controlWindow(peripheral, service_uuid, characteristic_uuid):
             toSend = f"%d%.3d%d%.3d%d%.3d" % (1, 0, 1, 0, 1, values['SE'])
         if event == '-LEFT-':
             val = values['SE'] - 5
+            if val < 0:
+                val = 0
             window['SE'].update(value=val)
             window.refresh()
             toSend = f"%d%.3d%d%.3d%d%.3d" % (1, 0, 1, 0, 1, val)
         if event == '-RIGHT-':
             val = values['SE'] + 5
+            if val > 135:
+                val = 135
             window['SE'].update(value=val)
             window.refresh()
             toSend = f"%d%.3d%d%.3d%d%.3d" % (1, 0, 1, 0, 1, val)
         if event == '-UP-':
-            window['MS'].update(value=values['MS'] + 10)
+            window['MS'].update(value=values['MS'] + 20)
             window.refresh()
         if event == '-DOWN-':
-            window['MS'].update(value=values['MS'] - 10)
+            window['MS'].update(value=values['MS'] - 20)
             window.refresh()
         if event == '-LARGE-':
             val = 115
@@ -189,7 +194,15 @@ def controlWindow(peripheral, service_uuid, characteristic_uuid):
             window.refresh()
             toSend = f"%d%.3d%d%.3d%d%.3d" % (1, 0, 1, 0, 1, val)
         if event == '-SMOL-':
-            pass
+            val = 125
+            window['SE'].update(value=val)
+            window.refresh()
+            toSend = f"%d%.3d%d%.3d%d%.3d" % (1, 0, 1, 0, 1, val)
+        if event == '-OPEN-':
+            val = 70
+            window['SE'].update(value=val)
+            window.refresh()
+            toSend = f"%d%.3d%d%.3d%d%.3d" % (1, 0, 1, 0, 1, val)
         # Calculate checkSum
         checkSum = 0
         for i in toSend:
