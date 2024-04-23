@@ -1,5 +1,8 @@
-Remote Controlled Robot with Gripper - Zdalnie Sterowany Robot z Ramieniem (pol)
+## Remote Controlled Robot with Gripper
+# Zdalnie Sterowany Robot z Ramieniem (pol)
+
 Group project. Software part
+
 
 ![obraz](https://github.com/klajet/SWIMProjectController/assets/126820289/daadec89-4bd4-4536-8951-9972c4caa2e0)
 
