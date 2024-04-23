@@ -1,7 +1,7 @@
 # Remote Controlled Robot with Gripper
 ## Zdalnie Sterowany Robot z Ramieniem (pol)
 
-Group project. Software part
+Group project. Software part <br>
 This is python app, used to control robot via bluetooth connection.
 test.txt file contains portion of STM code in C. 
 
