@@ -1,5 +1,5 @@
-## Remote Controlled Robot with Gripper
-# Zdalnie Sterowany Robot z Ramieniem (pol)
+# Remote Controlled Robot with Gripper
+## Zdalnie Sterowany Robot z Ramieniem (pol)
 
 Group project. Software part
 
